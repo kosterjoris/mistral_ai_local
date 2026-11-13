@@ -129,5 +129,6 @@ abstract-image-node/
 ├── cli.py                   # headless CLI (Linux zonder scherm)
 ├── config.json              # instellingen (incl. system prompt) — door ⚙ te wijzigen
 ├── requirements.txt
+├── OVERDRACHT.md            # handover voor inbouwen in het originele project
 └── tests/test_node.py       # tests zonder model
 ```
