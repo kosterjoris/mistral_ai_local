@@ -101,6 +101,8 @@ class SettingsDialog(tk.Toplevel):
             return
         self.node.update_settings(**updates)
         self.node.save_settings()
+        if hasattr(self.master, "refresh_fields"):
+            self.master.refresh_fields()
         self.destroy()
 
 
@@ -161,6 +163,11 @@ class TileApp(tk.Tk):
 
     def on_settings(self):
         SettingsDialog(self, self.node)
+
+    def refresh_fields(self):
+        s = self.node.settings
+        self.steps_var.set(str(s.steps))
+        self.seed_var.set(str(s.seed))
 
     def on_generate(self):
         if self._busy:
