@@ -14,6 +14,13 @@ SIZE_STEP = 8
 SEED_RANDOM = -1
 MAX_SEED = 2**31 - 1
 
+MODEL_PRESETS = {
+    "tiny-sd — snel, ruw, ~1 GB (standaard)": {"model_id": "segmind/tiny-sd", "steps": 20, "guidance_scale": 7.5},
+    "tiny random weights — 8,8 MB, pure ruis (snel testen)": {"model_id": "hf-internal-testing/tiny-stable-diffusion-torch", "steps": 4, "guidance_scale": 7.5},
+    "SD 1.5 — klassiek, ~2 GB fp16, beste kwaliteit voor de grootte": {"model_id": "runwayml/stable-diffusion-v1-5", "steps": 25, "guidance_scale": 7.5},
+    "SDXL Turbo — ~7 GB fp16, 1-4 stappen (guidance 0), 8 GB+ VRAM": {"model_id": "stabilityai/sdxl-turbo", "steps": 4, "guidance_scale": 0.0},
+}
+
 
 @dataclass
 class NodeSettings:
@@ -118,7 +125,7 @@ class AbstractImageNode:
 
     def _load_diffusers_pipeline(self):
         import torch
-        from diffusers import StableDiffusionPipeline
+        from diffusers import AutoPipelineForText2Image
 
         device = self._device or self._resolve_device()
         use_fp16 = device in ("cuda", "mps")
@@ -134,7 +141,7 @@ class AbstractImageNode:
         last_error: Optional[Exception] = None
         for kwargs in attempts:
             try:
-                pipe = StableDiffusionPipeline.from_pretrained(model_id, **kwargs)
+                pipe = AutoPipelineForText2Image.from_pretrained(model_id, **kwargs)
                 break
             except Exception as exc:
                 last_error = exc

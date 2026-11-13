@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from abstract_image_node import AbstractImageNode, NodeSettings
+from abstract_image_node import MODEL_PRESETS, AbstractImageNode, NodeSettings
 
 
 class FakeImage:
@@ -132,6 +132,14 @@ class NodeTest(unittest.TestCase):
     def test_onbekende_instelling_gooit_fout(self):
         with self.assertRaises(ValueError):
             self.node.update_settings(geen_instelling="ja")
+
+    def test_model_presets_structuur(self):
+        self.assertGreaterEqual(len(MODEL_PRESETS), 2)
+        for label, preset in MODEL_PRESETS.items():
+            self.assertIsInstance(label, str)
+            self.assertTrue(preset["model_id"])
+            self.assertIsInstance(preset["steps"], int)
+            self.assertIsInstance(preset["guidance_scale"], (int, float))
 
     def test_build_prompt_combineert_delen(self):
         self.assertEqual(AbstractImageNode.build_prompt("b", "a"), "a, b")

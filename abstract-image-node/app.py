@@ -6,7 +6,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
 
-from abstract_image_node import AbstractImageNode
+from abstract_image_node import MODEL_PRESETS, AbstractImageNode
 
 PROJECT_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = PROJECT_DIR / "config.json"
@@ -26,9 +26,13 @@ class SettingsDialog(tk.Toplevel):
         form = ttk.Frame(self, padding=10)
         form.grid(row=0, column=0, sticky="nsew")
 
-        ttk.Label(form, text="Model (Hugging Face id):").grid(row=0, column=0, sticky="w")
-        self.model_var = tk.StringVar(value=s.model_id)
-        ttk.Entry(form, textvariable=self.model_var, width=44).grid(row=0, column=1, sticky="ew")
+        ttk.Label(form, text="Model:").grid(row=0, column=0, sticky="w")
+        labels = list(MODEL_PRESETS.keys())
+        current_label = next((lbl for lbl, p in MODEL_PRESETS.items() if p["model_id"] == s.model_id), None)
+        self.model_var = tk.StringVar(value=current_label or s.model_id)
+        self.model_box = ttk.Combobox(form, textvariable=self.model_var, values=labels, width=52)
+        self.model_box.grid(row=0, column=1, sticky="ew")
+        self.model_box.bind("<<ComboboxSelected>>", self._on_preset)
 
         ttk.Label(form, text="Device:").grid(row=1, column=0, sticky="w")
         self.device_var = tk.StringVar(value=s.device)
@@ -68,10 +72,19 @@ class SettingsDialog(tk.Toplevel):
         self.transient(master)
         self.grab_set()
 
+    def _on_preset(self, _event=None):
+        preset = MODEL_PRESETS.get(self.model_var.get())
+        if preset:
+            self.steps_var.set(str(preset["steps"]))
+            self.guidance_var.set(str(preset["guidance_scale"]))
+
     def on_save(self):
+        selected = self.model_var.get().strip()
+        preset = MODEL_PRESETS.get(selected)
+        model_id = preset["model_id"] if preset else selected
         try:
             updates = {
-                "model_id": self.model_var.get().strip(),
+                "model_id": model_id,
                 "device": self.device_var.get(),
                 "system_prompt": self.system_text.get("1.0", "end").strip(),
                 "negative_prompt": self.negative_text.get("1.0", "end").strip(),
@@ -100,6 +113,9 @@ class TileApp(tk.Tk):
         self._queue: queue.Queue = queue.Queue()
         self._busy = False
         self._preview_image = None
+        self._base_photo = None
+        self._view = 0
+        self.zoom_var = tk.StringVar(value="100%")
 
         s = node.settings
         main = ttk.Frame(self, padding=10)
@@ -131,6 +147,9 @@ class TileApp(tk.Tk):
         self.gen_button.pack(side="left")
         ttk.Button(btnrow, text="⚙", width=3, command=self.on_settings).pack(side="left", padx=6)
         ttk.Label(btnrow, text="tandwiel = instellingen (incl. system prompt)").pack(side="left")
+        ttk.Button(btnrow, text="−", width=2, command=lambda: self._zoom(-1)).pack(side="left", padx=(12, 0))
+        ttk.Button(btnrow, text="+", width=2, command=lambda: self._zoom(1)).pack(side="left", padx=2)
+        ttk.Label(btnrow, textvariable=self.zoom_var, width=6).pack(side="left")
 
         self.preview_label = ttk.Label(main, text="Nog geen plaatje", anchor="center", background="#dddddd")
         self.preview_label.pack(fill="both", expand=True, pady=6)
@@ -195,15 +214,38 @@ class TileApp(tk.Tk):
         self.gen_button.config(state="normal")
         self.status_var.set(f"Klaar in {result.elapsed:.1f}s — opgeslagen: {result.path} (seed {result.seed})")
         try:
-            image = tk.PhotoImage(file=str(result.path))
-            largest = max(image.width(), image.height())
-            if largest > PREVIEW_MAX:
-                factor = largest // PREVIEW_MAX + 1
-                image = image.subsample(factor, factor)
-            self._preview_image = image
-            self.preview_label.config(image=image, text="")
+            self._base_photo = tk.PhotoImage(file=str(result.path))
+            largest = max(self._base_photo.width(), self._base_photo.height())
+            self._view = -(largest // PREVIEW_MAX + 1) if largest > PREVIEW_MAX else 0
+            self._apply_view()
         except tk.TclError:
+            self._base_photo = None
             self.preview_label.config(image="", text=f"Preview niet beschikbaar (Tk < 8.6?). Bestand: {result.path}")
+
+    def _zoom(self, delta):
+        self._view = max(-8, min(3, self._view + delta))
+        self._apply_view()
+
+    def _apply_view(self):
+        if self._base_photo is None:
+            return
+        try:
+            if self._view > 1:
+                image = self._base_photo.zoom(self._view)
+            elif self._view < 0:
+                image = self._base_photo.subsample(-self._view)
+            else:
+                image = self._base_photo
+        except tk.TclError:
+            return
+        self._preview_image = image
+        self.preview_label.config(image=image, text="")
+        if self._view > 1:
+            self.zoom_var.set(f"x{self._view}")
+        elif self._view < 0:
+            self.zoom_var.set(f"1/{-self._view}")
+        else:
+            self.zoom_var.set("100%")
 
     def _show_error(self, exc):
         self._busy = False

@@ -39,7 +39,7 @@ python3 cli.py "abstracte paarse inktvlekken" --width 768 --height 512 --seed 42
 
 ## Welk model?
 
-Standaard staat in `config.json`: `segmind/tiny-sd` — een gedistilleerde Stable Diffusion (~1–2 GB download, 55% minder parameters), snel op CPU én MPS, en grof/"beroerd" genoeg voor een kunstproject. Wissel simpel van model via het ⚙-tandwiel (`model_id`) of in `config.json`:
+Standaard staat in `config.json`: `segmind/tiny-sd` — een gedistilleerde Stable Diffusion (~1–2 GB download, 55% minder parameters), snel op CPU én MPS, en grof/"beroerd" genoeg voor een kunstproject. In de app kies je het model via een **dropdown in het ⚙-tandwiel** (presets uit `MODEL_PRESETS` in `abstract_image_node.py`); bij elke preset worden automatisch de aanbevolen stappen/guidance ingevuld. Je kunt ook een eigen Hugging Face id intypen. De loader gebruikt `AutoPipelineForText2Image`, dus zowel SD 1.5- als SDXL-modellen werken. Wissel van model via het tandwiel of in `config.json`:
 
 | Model id | Download | Opmerking |
 |---|---|---|
@@ -49,6 +49,18 @@ Standaard staat in `config.json`: `segmind/tiny-sd` — een gedistilleerde Stabl
 | `stabilityai/sdxl-turbo` | ~6–7 GB (fp16) | 1–4 stappen, `guidance_scale: 0`, 8 GB VRAM |
 
 Tip voor CPU-only: hou `steps` laag (10–20) en resolutie 512×512.
+
+## Grijze vlakken / matige resultaten
+
+- Verhoog **stappen** naar 20–30 (bij 4 stappen krijg je vaak grijs vlak — dat zag je bij de CLI-test).
+- Maak de **prompt langer en concreter**; een kaal woord als `car park` geeft een klein model weinig houvast. De system prompt wordt automatisch vóór je prompt gezet.
+- 512×512 werkt beter dan 256×256.
+- Probeer een andere **seed** (of -1 = willekeurig).
+- `tiny-sd` is expres een basic ~1 GB-model. Kies in het tandwiel **SD 1.5** (~2 GB) voor merkbaar betere foto's.
+
+## Preview zoom
+
+Met de **− / +** knoppen naast de preview zoom je in/uit (label toont het niveau, bijv. `x2` of `1/4`).
 
 ## De interface
 
