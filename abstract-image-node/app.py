@@ -108,7 +108,7 @@ class TileApp(tk.Tk):
         ttk.Label(main, text="Prompt:").pack(anchor="w")
         self.prompt_text = tk.Text(main, height=3, wrap="word")
         self.prompt_text.pack(fill="x")
-        self.prompt_text.insert("1.0", "abstracte paarse inktvlekken op ruw papier")
+        self.prompt_text.insert("1.0", "casual smartphone snapshot of an average person in a cluttered room, awkward angle, ungraded")
 
         row = ttk.Frame(main)
         row.pack(fill="x", pady=6)

@@ -58,7 +58,11 @@ Tip voor CPU-only: hou `steps` laag (10–20) en resolutie 512×512.
 - **Stappen** — aantal diffusie-stappen.
 - **⚙ tandwiel** — instellingen: `system_prompt`, `negative_prompt`, `model_id`, `device` (auto/cpu/cuda/mps), stappen, guidance, seed, output-map. Wordt opgeslagen in `config.json`.
 
-**System prompt:** Stable Diffusion kent geen echte "system prompt"; de node zet hem daarom vóór je prompt (komma-gescheiden). In het tandwiel pas je hem aan, bijv. _"abstracte kunst, vervormd, korrelig"_.
+**System prompt:** Stable Diffusion kent geen echte "system prompt"; de node zet hem daarom vóór je prompt (komma-gescheiden). In het tandwiel pas je hem aan. Tip: Engels werkt beter (de CLIP-encoder is Engelstalig getraind) en houd hem kort — CLIP kapt na 77 tokens. Standaard (voor jouw stijl):
+
+```
+raw casual smartphone snapshot, ungraded unedited photo, natural available light, amateur off-center framing, awkward unusual angle, cluttered difficult composition, candid everyday average people in plain clothes, mundane setting, film grain, muted flat colors, no retouching, lo-fi
+```
 
 Output staat als PNG in `outputs/` (instelbaar).
 

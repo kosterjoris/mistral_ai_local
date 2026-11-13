@@ -1,7 +1,7 @@
 {
   "model_id": "segmind/tiny-sd",
-  "system_prompt": "abstracte kunst, ruw en expressief, vervormde vormen, korrelige textuur, analoog geschilderd",
-  "negative_prompt": "leesbare tekst, watermerk, wazig, lage kwaliteit",
+  "system_prompt": "raw casual smartphone snapshot, ungraded unedited photo, natural available light, amateur off-center framing, awkward unusual angle, cluttered difficult composition, candid everyday average people in plain clothes, mundane setting, film grain, muted flat colors, no retouching, lo-fi",
+  "negative_prompt": "text, watermark, logo, oversaturated, studio lighting, professional photoshoot, glossy retouched skin, perfect centered composition, blurry, low quality, illustration, painting, 3d render",
   "steps": 20,
   "guidance_scale": 7.5,
   "seed": -1,

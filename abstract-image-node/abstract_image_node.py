@@ -18,8 +18,8 @@ MAX_SEED = 2**31 - 1
 @dataclass
 class NodeSettings:
     model_id: str = "segmind/tiny-sd"
-    system_prompt: str = "abstracte kunst, ruw en expressief, vervormde vormen, korrelige textuur, analoog geschilderd"
-    negative_prompt: str = "leesbare tekst, watermerk, wazig, lage kwaliteit"
+    system_prompt: str = "raw casual smartphone snapshot, ungraded unedited photo, natural available light, amateur off-center framing, awkward unusual angle, cluttered difficult composition, candid everyday average people in plain clothes, mundane setting, film grain, muted flat colors, no retouching, lo-fi"
+    negative_prompt: str = "text, watermark, logo, oversaturated, studio lighting, professional photoshoot, glossy retouched skin, perfect centered composition, blurry, low quality, illustration, painting, 3d render"
     steps: int = 20
     guidance_scale: float = 7.5
     seed: int = SEED_RANDOM
