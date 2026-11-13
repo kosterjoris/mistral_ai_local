@@ -106,6 +106,16 @@ class AbstractImageNode:
             pass
         return "cpu"
 
+    @staticmethod
+    def _diffusers_supports_dtype() -> bool:
+        import diffusers
+
+        try:
+            major, minor = (int(part) for part in diffusers.__version__.split(".")[:2])
+        except Exception:
+            return False
+        return (major, minor) >= (0, 32)
+
     def _load_diffusers_pipeline(self):
         import torch
         from diffusers import StableDiffusionPipeline
@@ -114,10 +124,11 @@ class AbstractImageNode:
         use_fp16 = device in ("cuda", "mps")
         dtype = torch.float16 if use_fp16 else torch.float32
         model_id = self.settings.model_id
+        dtype_key = "dtype" if self._diffusers_supports_dtype() else "torch_dtype"
         attempts = [
-            {"torch_dtype": dtype, "variant": "fp16", "use_safetensors": True} if use_fp16
-            else {"torch_dtype": dtype, "use_safetensors": True},
-            {"torch_dtype": dtype},
+            {dtype_key: dtype, "variant": "fp16", "use_safetensors": True} if use_fp16
+            else {dtype_key: dtype, "use_safetensors": True},
+            {dtype_key: dtype},
         ]
         pipe = None
         last_error: Optional[Exception] = None
