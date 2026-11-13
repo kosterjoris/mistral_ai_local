@@ -1,0 +1,10 @@
+{
+  "model_id": "segmind/tiny-sd",
+  "system_prompt": "abstracte kunst, ruw en expressief, vervormde vormen, korrelige textuur, analoog geschilderd",
+  "negative_prompt": "leesbare tekst, watermerk, wazig, lage kwaliteit",
+  "steps": 20,
+  "guidance_scale": 7.5,
+  "seed": -1,
+  "device": "auto",
+  "output_dir": "outputs"
+}
