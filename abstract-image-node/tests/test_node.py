@@ -133,6 +133,16 @@ class NodeTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.node.update_settings(geen_instelling="ja")
 
+    def test_cache_dir_roundtrip(self):
+        cfg = Path(self.tmp.name) / "cfg.json"
+        node = AbstractImageNode(
+            NodeSettings(output_dir=str(Path(self.tmp.name) / "o"), cache_dir="models"),
+            config_path=cfg,
+        )
+        node.save_settings()
+        loaded = NodeSettings.load(cfg)
+        self.assertEqual(loaded.cache_dir, "models")
+
     def test_model_presets_structuur(self):
         self.assertGreaterEqual(len(MODEL_PRESETS), 2)
         for label, preset in MODEL_PRESETS.items():

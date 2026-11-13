@@ -50,6 +50,8 @@ Standaard staat in `config.json`: `segmind/tiny-sd` — een gedistilleerde Stabl
 
 Tip voor CPU-only: hou `steps` laag (10–20) en resolutie 512×512.
 
+**Waar staan de modellen?** Niet in git — alleen code staat in de repo. Bij eerste gebruik downloadt elke machine de gewichten naar `~/.cache/huggingface/hub/` (daarna offline). Wil je ze project-lokaal (bijv. om mee te nemen naar een Linux-machine), zet dan in `config.json` of het ⚙-tandwiel: `"cache_dir": "models"` → gewichten landen in `<project>/models/` (staat in `.gitignore`).
+
 ## Grijze vlakken / matige resultaten
 
 - Verhoog **stappen** naar 20–30 (bij 4 stappen krijg je vaak grijs vlak — dat zag je bij de CLI-test).

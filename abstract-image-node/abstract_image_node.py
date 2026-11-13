@@ -32,6 +32,7 @@ class NodeSettings:
     seed: int = SEED_RANDOM
     device: str = "auto"
     output_dir: str = "outputs"
+    cache_dir: str = ""
 
     @classmethod
     def from_dict(cls, data: dict) -> "NodeSettings":
@@ -132,11 +133,14 @@ class AbstractImageNode:
         dtype = torch.float16 if use_fp16 else torch.float32
         model_id = self.settings.model_id
         dtype_key = "dtype" if self._diffusers_supports_dtype() else "torch_dtype"
+        cache_dir = str(self._resolve_relative(self.settings.cache_dir)) if self.settings.cache_dir else None
         attempts = [
             {dtype_key: dtype, "variant": "fp16", "use_safetensors": True} if use_fp16
             else {dtype_key: dtype, "use_safetensors": True},
             {dtype_key: dtype},
         ]
+        if cache_dir:
+            attempts = [dict(a, cache_dir=cache_dir) for a in attempts]
         pipe = None
         last_error: Optional[Exception] = None
         for kwargs in attempts:
@@ -174,11 +178,15 @@ class AbstractImageNode:
         parts = [p.strip().strip(",").strip() for p in (system_prompt, prompt)]
         return ", ".join(p for p in parts if p)
 
-    def _output_dir(self) -> Path:
-        out = Path(self.settings.output_dir)
-        if not out.is_absolute():
+    def _resolve_relative(self, value: str) -> Path:
+        path = Path(value)
+        if not path.is_absolute():
             base = self._config_path.parent if self._config_path else Path.cwd()
-            out = base / out
+            path = base / path
+        return path
+
+    def _output_dir(self) -> Path:
+        out = self._resolve_relative(self.settings.output_dir)
         out.mkdir(parents=True, exist_ok=True)
         return out
 

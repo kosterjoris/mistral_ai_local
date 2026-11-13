@@ -64,6 +64,10 @@ class SettingsDialog(tk.Toplevel):
         self.output_var = tk.StringVar(value=s.output_dir)
         ttk.Entry(form, textvariable=self.output_var, width=44).grid(row=7, column=1, sticky="ew")
 
+        ttk.Label(form, text="Model cache map (leeg = ~/.cache/huggingface):").grid(row=8, column=0, sticky="w")
+        self.cache_var = tk.StringVar(value=s.cache_dir)
+        ttk.Entry(form, textvariable=self.cache_var, width=44).grid(row=8, column=1, sticky="ew")
+
         buttons = ttk.Frame(self, padding=(10, 0, 10, 10))
         buttons.grid(row=1, column=0, sticky="e")
         ttk.Button(buttons, text="Annuleren", command=self.destroy).grid(row=0, column=0, padx=4)
@@ -92,6 +96,7 @@ class SettingsDialog(tk.Toplevel):
                 "guidance_scale": float(self.guidance_var.get()),
                 "seed": int(self.seed_var.get()),
                 "output_dir": self.output_var.get().strip() or "outputs",
+                "cache_dir": self.cache_var.get().strip(),
             }
         except ValueError:
             messagebox.showerror("Ongeldige invoer", "Stappen, guidance en seed moeten getallen zijn.", parent=self)
